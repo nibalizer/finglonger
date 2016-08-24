@@ -1,25 +1,37 @@
 #/usr/bin/env bash
+
+# Parts taken from:
 # MIT © Sindre Sorhus - sindresorhus.com
+# New stuff:
+# MIT © IBM
 
-# git hook to run a command after `git pull` if a specified file was changed
-# Run `chmod +x post-merge` to make it executable then put it into `.git/hooks/`.
+echo "running finglonger"
+FINGLONGER_DIR=`dirname $(readlink -f $0)`
+FINGLONGER_PYTHON=${FINGLONGER_DIR}/venv/bin/python
+if [ ! -x $FINGLONGER_PYTHON ]; then
+   echo "Finglonger: python not set up, error, consult readme"
+   exit 1
+fi
 
-changed_files="$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD)"
+new_commits=$(git log --pretty=format:%h ORIG_HEAD..HEAD)
 
-check_run() {
-	echo "$changed_files" | grep --quiet "$1" && eval "$2"
-}
 
 echo '/-----------------------------------------------------\'
 echo '| ' "Running finglonger"
 echo '|'
-echo '|'  "Scripts: " $changed_files
+echo '|'  "New Commits: " $new_commits
 echo '|'
-for script in $changed_files
+for commit in $new_commits
 do
 echo '|'
-echo '|'  "Running: " $script
-   sh $script
+echo '|'  "Running: " $(git show --no-patch --pretty=format:%s $commit)
+   temp1=$(tempfile)
+   temp2=$(tempfile)
+   git show $commit | grep -v '^+++ ' | egrep '^\+' | sed 's/^\+//' > $temp1
+   ${FINGLONGER_PYTHON} ${FINGLONGER_DIR}/pyfinglonger.py $temp1 > $temp2
+   rm -f $temp1
+   sh $temp2
+   rm -f $temp2
 echo '|'
 done
 echo '| ' "Finished running finglonger"
