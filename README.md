@@ -11,7 +11,7 @@ You need a repo to hold the log. Make this.
 * `/opt/git/finglonger/venv/bin/pip install pyyaml`
 * Clone the log repo into /opt/git/finglonger-tasks/
 * Symlink in the finglonger hook: `ln -s /opt/git/finglonger/finglonger-hook /opt/git/finglonger-tasks/.git/hooks/post-merge`
-* Create /var/run/finglonger.lock and /var/log/finglocker.log such that the user running finglonger can write to them
+* Create /var/run/finglonger.lock and /var/log/finglonger.log such that the user running finglonger can write to them
 * (optional) setup logrotate on the finglonger log file
 * Set some kind of a cron job to run 'git pull' in the log git repo periodically. It will automatically run things from the log.
   * For example, adding the following to the appropriate user's crontab would cause finglonger to run once every five minutes and log to `/var/log/finglonger.log`:
