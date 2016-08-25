@@ -19,7 +19,7 @@ You need a repo to hold the log. Make this.
 Start your log(tasks.yaml) out looking like this:
 
 
-```
+```yaml
 ---
 task:
   name: job
