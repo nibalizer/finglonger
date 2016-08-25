@@ -5,7 +5,11 @@
 # New stuff:
 # MIT © IBM
 
-echo "running finglonger"
+echo
+echo "--"
+echo $(date)
+echo "Running Finglonger"
+echo "--"
 FINGLONGER_DIR=`dirname $(readlink -f $0)`
 FINGLONGER_PYTHON=${FINGLONGER_DIR}/venv/bin/python
 if [ ! -x $FINGLONGER_PYTHON ]; then
