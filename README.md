@@ -17,7 +17,7 @@ You need a repo to hold the log. Make this.
   * For example, adding the following to the appropriate user's crontab would cause finglonger to run once every five minutes and log to `/var/log/finglonger.log`:
 
         ```shell
-        */5 * * * * cd /opt/git/finglonger && flock -n /var/log/finglonger.lock git pull >> /var/run/finglonger.log
+        */5 * * * * cd /opt/git/finglonger && flock -n /var/run/finglonger.lock git pull >> /var/log/finglonger.log
         ```
 
 
