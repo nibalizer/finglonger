@@ -1,5 +1,7 @@
 # finglonger
 
+![Finglonger](futurama_finglonger.jpg)
+
 Finglonger is a small tool that turns an intention log into shell commands that are run by a robot on a server. This means you can use git and code review to poke servers instead of rooters logging in.
 
 # setup
