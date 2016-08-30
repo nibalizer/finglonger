@@ -16,8 +16,20 @@ if [ ! -x $FINGLONGER_PYTHON ]; then
    echo "Finglonger: python not set up, error, consult readme"
    exit 1
 fi
+FINGLONGER_ENVIRONMENT=$(cat $HOME/.config/finglonger/finglongerrc | grep '^environment' | cut -d "=" -f 2)
 
-new_commits=$(git log --pretty=format:%h ORIG_HEAD..HEAD)
+if [ -z $FINGLONGER_ENVIRONMENT ]; then
+    FINGLONGER_ENVIRONMENT=default
+fi
+
+if [ ! -f envs/${FINGLONGER_ENVIRONMENT}/tasks.yaml ]; then
+   echo "Finglonger: No environment found matching: $FINGLONGER_ENVIRONMENT, error, consult readme"
+   exit 1
+fi
+
+TASKS_FILE=envs/${FINGLONGER_ENVIRONMENT}/tasks.yaml
+
+new_commits=$(git log --pretty=format:%h ORIG_HEAD..HEAD $TASKS_FILE)
 
 
 echo '/-----------------------------------------------------\'
@@ -28,10 +40,10 @@ echo '|'
 for commit in $new_commits
 do
 echo '|'
-echo '|'  "Running: " $(git show --no-patch --pretty=format:%s $commit)
+echo '|'  "Running: " $(git show --no-patch --pretty=format:%s $commit $TASKS_FILE)
    temp1=$(tempfile)
    temp2=$(tempfile)
-   git show $commit | grep -v '^+++ ' | egrep '^\+' | sed 's/^\+//' > $temp1
+   git show $commit $TASKS_FILE | grep -v '^+++ ' | egrep '^\+' | sed 's/^\+//' > $temp1
    ${FINGLONGER_PYTHON} ${FINGLONGER_DIR}/pyfinglonger.py $temp1 > $temp2
    rm -f $temp1
    sh $temp2
