@@ -28,13 +28,12 @@ You need a finglonger tasks repo. Start out with:
 
 ```
 envs/default/tasks.yaml
-files
-scripts
+files/
+scripts/
 ```
 
 See https://github.com/nibalizer/finglonger-tasks as an example
 Tasks will only be run in the environment they are set in.
-
 
 
 ## log format
@@ -70,7 +69,7 @@ Tasks will only be run in the environment they are set in.
 
 # Note
 
-Finglonger is super beta, it will probably set your computer on fire. Try it, break it, and lets make it better together
+Finglonger is super beta, it will probably set your computer on fire. Try it, break it, and lets make it better together.
 
 
 # Examples
@@ -81,7 +80,7 @@ Finglonger is super beta, it will probably set your computer on fire. Try it, br
 ```yaml
 task:
   name: Hello world job
-  shell: echo Hello World!
+  shell: echo 'Hello, World!'
 ```
 
 
