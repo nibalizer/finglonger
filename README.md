@@ -4,6 +4,19 @@
 
 Finglonger is a small tool that turns an intention log into shell commands that are run by a robot on a server. This means you can use git and code review to poke servers instead of rooters logging in.
 
+# Why?
+
+Finglonger is a 'no-ops' tool. It provides a simple structure so that system administrators don't have to type commands on servers. Instead, system administrators, devs, and others in the organization write their commands into a simple text format and submit that through a pull request or other code review tool. Administrators merge these pull requests, and finglonger runs the commands.
+
+Configuration management is built on the idea of idempotency. But there are times in system administration where something is too rare, too complicated, or too dangerous to run every 20 minutes. Finglonger lets teams coordinate the running of one off tasks, adding git history and code review to what used to be manual root-shell activities.
+
+# How it works
+
+Finglonger has a task list. It runs each command in the list exactly once. Finglonger does this by using git to track state.
+
+The finglonger-tasks repository has two branches: master and done. Users propose new tasks to the master branch, administrators merge those pull requests, finglonger picks up changes to the master branch, runs the commands, then merges those changes into the done branch. Finglonger manages the 'done' branch and the administrators manage the 'master' branch. Finglonger operates on the difference between the 'master' branch and the 'done' branch.
+
+
 # setup
 
 You need a repo to hold the log. Make this.
