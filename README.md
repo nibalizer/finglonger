@@ -12,15 +12,18 @@ You need a repo to hold the log. Make this.
 * `virtualenv /opt/git/finglonger/venv`
 * `/opt/git/finglonger/venv/bin/pip install pyyaml`
 * Clone the log repo into /opt/git/finglonger-tasks/
-* Symlink in the finglonger hook: `ln -s /opt/git/finglonger/finglonger-hook /opt/git/finglonger-tasks/.git/hooks/post-merge`
 * Create /var/run/finglonger.lock and /var/log/finglonger.log such that the user running finglonger can write to them
 * (optional) setup logrotate on the finglonger log file
-* Set some kind of a cron job to run 'git pull' in the log git repo periodically. It will automatically run things from the log.
-  * For example, adding the following to the appropriate user's crontab would cause finglonger to run once every five minutes and log to `/var/log/finglonger.log`:
+* Set some kind of a cron job to run ``git pull`` and ``finglonger.py`` in the log git repo periodically. It will automatically run things from the log.
 
-        ```shell
-        */5 * * * * cd /opt/git/finglonger-tasks && flock -n /var/run/finglonger.lock git pull >> /var/log/finglonger.log 2>&1
-        ```
+# cron configuration
+
+
+```shell
+*/5 * * * * cd /opt/git/finglonger-tasks && git pull && flock -n /var/run/finglonger.lock /opt/git/finglonger/venv/bin/python /opt/git/finglonger/finglonger.py >> /var/log/finglonger.log 2>&1
+```
+
+The above crontab would cause finglonger to run once every five minutes and log to `/var/log/finglonger.log`:
 
 ## finglonger-tasks repo
 
@@ -36,19 +39,19 @@ See https://github.com/nibalizer/finglonger-tasks as an example
 Tasks will only be run in the environment they are set in.
 
 
-## log format
+## tasks file format
 
-Start your log(tasks.yaml) out looking like this:
+Start your tasks file (tasks.yaml) out looking like this:
 
 
 ```yaml
 ---
-task:
-  name: job
-  shell: echo test +
-task:
-  name: job
-  shell: echo test +
+- task:
+    name: job
+    shell: echo test +
+- task:
+    name: job
+    shell: echo test +
 
 ```
 
@@ -58,18 +61,28 @@ Add one task object per commit or things are gonna break for you.
 
 ## Config file
 
-Finglonger is controlled by `~/.config/finglonger/finglongerrc`
+Finglonger is controlled by `~/.config/finglonger/config.yaml`
 
 ```
-environment=myenv
+---
+environment: myenv
 ```
 
-The default environment is 'default'. If you don't have a finglongerrc, 'default' will be used.
-Tasks will only be run in the environment they are set in.
+Environments allow different servers to be controlled by different tasks files.
 
 # Note
 
 Finglonger is super beta, it will probably set your computer on fire. Try it, break it, and lets make it better together.
+
+# Hey this looks like ansible
+
+Yup. Two big goals here:
+
+1) Don't depend on ansible
+
+2) Don't rewrite ansible
+
+It is more important to accomplish the first than the second.
 
 
 # Examples
@@ -78,9 +91,9 @@ Finglonger is super beta, it will probably set your computer on fire. Try it, br
 
 
 ```yaml
-task:
-  name: Hello world job
-  shell: echo 'Hello, World!'
+- task:
+    name: Hello world job
+    shell: echo 'Hello, World!'
 ```
 
 
@@ -89,17 +102,37 @@ task:
 (Add config.js to the files directory in your finglonger-tasks)
 
 ```yaml
-task:
-  name: Copy config.js to /var/www/html/myapp on app-server1.example.com
-  shell: scp files/config.js root@app-server1.example.com:/var/www/html/myapp/config.js
+- task:
+    name: Copy config.js to /var/www/html/myapp on app-server1.example.com
+    shell: scp files/config.js root@app-server1.example.com:/var/www/html/myapp/config.js
 ```
 
 ## Restart some service on a host
 
 
 ```yaml
-task:
-  name: Restart nova-api on compute1
-  shell: ssh root@compute1.example.com 'service nova-api restart'
+- task:
+    name: Restart nova-api on compute1
+    shell: ssh root@compute1.example.com 'service nova-api restart'
 ```
 
+
+## Use more than one line
+
+```yaml
+- task:
+    name: Some task that takes a while
+    shell:  |
+      echo "starting the big script woo"
+      dd if=/dev/zero of=/tmp/bigfile bs=1k count=1000
+```
+
+## Log output
+
+```yaml
+- task:
+    name: Something we care about the status of
+    shell:  |
+      echo "starting the big rsync woo"
+      rsync -PHaze ssh my_dir remotehost:/home/nibz/my_dir | tee /var/www/html/finglonger/rsync_log1.txt
+```
