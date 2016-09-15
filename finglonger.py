@@ -70,8 +70,9 @@ if __name__ == "__main__":
 
     git_cmd('git checkout master')
 
-    print len(master_tasks)
-    print len(done_tasks)
+    print "Tasks on master", len(master_tasks)
+    print "Tasks on done", len(done_tasks)
+    print "Tasks to do", len(master_tasks) - len(done_tasks)
     for i in done_tasks:
         master_tasks.remove(i)
     for task in master_tasks:
