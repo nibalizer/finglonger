@@ -9,10 +9,6 @@ import yaml
 
 
 def validate_config(config):
-    environment = config.get('environment')
-    if environment is None:
-        print "No environment set, set one in config.yaml "
-        sys.exit(1)
     max_tasks = config.get('max_tasks')
     if max_tasks is None:
         config['max_tasks'] = 5
@@ -20,7 +16,7 @@ def validate_config(config):
 
 
 def validate_environment(config):
-    if os.path.isfile("envs/" + config['environment'] + "/tasks.yaml"):
+    if os.path.isfile("tasks.yaml"):
         pass
     else:
         print "Tasks file not found, are you in the right directory?"
@@ -65,11 +61,11 @@ if __name__ == "__main__":
     validate_environment(config)
 
     git_cmd('git checkout master')
-    with open("envs/" + config['environment'] + "/tasks.yaml") as f:
+    with open("tasks.yaml") as f:
         master_tasks = yaml.load(f.read())
 
     git_cmd('git checkout done')
-    with open("envs/" + config['environment'] + "/tasks.yaml") as f:
+    with open("tasks.yaml") as f:
         done_tasks = yaml.load(f.read())
 
     git_cmd('git checkout master')
