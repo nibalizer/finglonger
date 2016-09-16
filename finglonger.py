@@ -13,6 +13,10 @@ def validate_config(config):
     if environment is None:
         print "No environment set, set one in config.yaml "
         sys.exit(1)
+    max_tasks = config.get('max_tasks')
+    if max_tasks is None:
+        config['max_tasks'] = 5
+    return config
 
 
 def validate_environment(config):
@@ -57,7 +61,7 @@ if __name__ == "__main__":
         print "Config file not found: {0}".format(config_file)
         sys.exit(1)
 
-    validate_config(config)
+    config = validate_config(config)
     validate_environment(config)
 
     git_cmd('git checkout master')
@@ -72,7 +76,14 @@ if __name__ == "__main__":
 
     print "Tasks on master", len(master_tasks)
     print "Tasks on done", len(done_tasks)
-    print "Tasks to do", len(master_tasks) - len(done_tasks)
+    num_tasks = len(master_tasks) - len(done_tasks)
+    print "Tasks to do", num_tasks
+    if num_tasks > config['max_tasks']:
+        print "Error, too many tasks found ", num_tasks
+        print "Cowardly refusing to do anything"
+        print "If this is really what you want, modify max_tasks in config"
+        sys.exit(1)
+
     for i in done_tasks:
         master_tasks.remove(i)
     for task in master_tasks:
