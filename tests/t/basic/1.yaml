@@ -1,0 +1,6 @@
+- task:
+    name: test 0
+    shell: echo test 0
+- task:
+    name: test 1
+    shell: echo test 1
