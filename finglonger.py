@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import argparse
 import os
 import sys
 import subprocess
@@ -53,12 +54,18 @@ def process_task(task):
 
 
 if __name__ == "__main__":
-    config_file = os.environ['HOME'] + "/.config/finglonger/config.yaml"
-    if os.path.isfile(config_file):
-        with open(config_file) as f:
+
+    default_config = os.path.expanduser("~/.config/finglonger/config.yaml")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', default=default_config)
+    args = parser.parse_args()
+
+    if os.path.isfile(args.config):
+        with open(args.config) as f:
             config = yaml.load(f.read())
     else:
-        print "Config file not found: {0}".format(config_file)
+        print "Config file not found: {0}".format(args.config)
         sys.exit(1)
 
     config = validate_config(config)
