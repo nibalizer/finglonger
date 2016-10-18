@@ -14,13 +14,12 @@ import yaml
 def create_temp_git_repo():
     temp_git_dir = tempfile.mkdtemp()
     repo = git.Repo.init(temp_git_dir)
-    os.makedirs(os.path.join(temp_git_dir, 'envs', 'test'))
     return repo
 
 def get_test_config():
     config = tempfile.NamedTemporaryFile()
     test_config = {
-        'environment': 'test'
+        'max_tasks': '5'
     }
     config.write(yaml.safe_dump(test_config))
     config.flush()
@@ -55,10 +54,9 @@ for suite in os.listdir(tests_dir):
         for test in sorted(os.listdir(suite_path)):
             print('  Found test: {}'.format(test), end="")
             test_path = os.path.join(suite_path, test)
-            tasks_path = os.path.join(repo.working_tree_dir, 'envs', 'test',
-                                      'tasks.yaml')
+            tasks_path = os.path.join(repo.working_tree_dir, 'tasks.yaml')
             shutil.copy(test_path, tasks_path)
-            repo.index.add(['envs/test/tasks.yaml'])
+            repo.index.add(['tasks.yaml'])
             repo.index.commit('Test commit')
             output = run_finglonger(repo.working_tree_dir, home, config.name)
             result_path = os.path.join(
