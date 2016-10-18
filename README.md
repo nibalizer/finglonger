@@ -149,3 +149,5 @@ It is more important to accomplish the first than the second.
       echo "starting the big rsync woo"
       rsync -PHaze ssh my_dir remotehost:/home/nibz/my_dir | tee /var/www/html/finglonger/rsync_log1.txt
 ```
+
+tarstst
