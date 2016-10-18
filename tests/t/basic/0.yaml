@@ -1,0 +1,3 @@
+- task:
+    name: test 0
+    shell: echo test 0
